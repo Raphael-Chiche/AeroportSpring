@@ -1,6 +1,8 @@
 package com.example.aeroportspring.controller;
 
 import com.example.aeroportspring.model.Aeroport;
+import com.example.aeroportspring.model.Personnel;
+import com.example.aeroportspring.model.Terminal;
 import com.example.aeroportspring.service.AeroportService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +54,52 @@ public class AeroportController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // ----- Terminaux -----
+
+    @GetMapping("/{id}/terminals")
+    public ResponseEntity<List<Terminal>> getTerminals(@PathVariable int id) {
+        return aeroportService.getAeroport(id)
+                .map(aeroport -> ResponseEntity.ok(aeroport.getTerminals()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // POST /Aeroport/1/terminals/2 -> rattache le terminal 2 a l'aeroport 1
+    @PostMapping("/{id}/terminals/{terminalId}")
+    public ResponseEntity<Aeroport> ajouterTerminal(@PathVariable int id, @PathVariable int terminalId) {
+        return aeroportService.ajouterTerminal(id, terminalId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}/terminals/{terminalId}")
+    public ResponseEntity<Aeroport> retirerTerminal(@PathVariable int id, @PathVariable int terminalId) {
+        return aeroportService.retirerTerminal(id, terminalId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ----- Personnels -----
+
+    @GetMapping("/{id}/personnels")
+    public ResponseEntity<List<Personnel>> getPersonnels(@PathVariable int id) {
+        return aeroportService.getAeroport(id)
+                .map(aeroport -> ResponseEntity.ok(aeroport.getPersonnels()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/personnels/{personnelId}")
+    public ResponseEntity<Aeroport> ajouterPersonnel(@PathVariable int id, @PathVariable int personnelId) {
+        return aeroportService.ajouterPersonnel(id, personnelId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}/personnels/{personnelId}")
+    public ResponseEntity<Aeroport> retirerPersonnel(@PathVariable int id, @PathVariable int personnelId) {
+        return aeroportService.retirerPersonnel(id, personnelId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

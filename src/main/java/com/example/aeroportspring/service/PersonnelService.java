@@ -1,6 +1,7 @@
 package com.example.aeroportspring.service;
 
 import com.example.aeroportspring.model.Personnel;
+import com.example.aeroportspring.model.Profession;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,5 +39,12 @@ public class PersonnelService {
 
     public boolean supprimerPersonnel(int id) {
         return this.personnels.removeIf(x -> x.getId() == id);
+    }
+
+    public Optional<Personnel> modifierProfession(int id, Profession profession) {
+        return getPersonnel(id).map(personnel -> {
+            personnel.setProfession(profession);
+            return personnel;
+        });
     }
 }

@@ -1,5 +1,6 @@
 package com.example.aeroportspring.service;
 
+import com.example.aeroportspring.model.Bagage;
 import com.example.aeroportspring.model.Passager;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,19 @@ public class PassagerService {
 
     public boolean supprimerPassager(int id) {
         return this.passagers.removeIf(x -> x.getId() == id);
+    }
+
+    public Optional<Passager> modifierPasseport(int id, boolean passeport) {
+        return getPassager(id).map(passager -> {
+            passager.setPasseport(passeport);
+            return passager;
+        });
+    }
+
+    public Optional<Passager> modifierBagage(int id, Bagage bagage) {
+        return getPassager(id).map(passager -> {
+            passager.setBagage(bagage);
+            return passager;
+        });
     }
 }

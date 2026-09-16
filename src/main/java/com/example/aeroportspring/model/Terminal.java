@@ -1,11 +1,17 @@
 package com.example.aeroportspring.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 public class Terminal {
     private static int CPT = 1;
 
     int id;
+    // On coupe les references circulaires (Vol -> Terminal -> Vol, Aeroport -> Terminal -> Aeroport)
+    // pour que la conversion en JSON ne tourne pas en boucle
+    @JsonIgnoreProperties({"depart", "destination"})
     private Vol vol;
     private String nom;
+    @JsonIgnoreProperties("terminals")
     private Aeroport aeroport;
 
     public Terminal(Vol vol, String nom, Aeroport aeroport) {
