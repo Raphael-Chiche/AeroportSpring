@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Date;
@@ -25,10 +26,9 @@ public class AeroportSpringApplication {
     CommandLineRunner tests(AeroportService aeroportService, CompagnieService compagnieService,
                             AvionService avionService, TerminalService terminalService,
                             PassagerService passagerService, PersonnelService personnelService,
-                            VolService volService, TransactionTemplate transactionTemplate) {
-        // Tout le scenario tourne dans une seule transaction : les listes chargees en differe (passagers,
-        // terminaux...) restent accessibles et findById renvoie toujours le meme objet Java
-        return args -> transactionTemplate.executeWithoutResult(transaction -> {
+                            VolService volService, PlatformTransactionManager transactionManager) {
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        return args -> transaction.executeWithoutResult(status -> {
             System.out.println("\n========== TESTS ==========");
 
             // ----- Creation des donnees -----
@@ -70,8 +70,7 @@ public class AeroportSpringApplication {
             verifier("Passeport modifie", jean.getPasseport());
 
             volService.affecterAvion(vol.getId(), grandAvion.getId());
-            // Comparaison par id : l'avion enregistre en base est une copie de "grandAvion"
-            verifier("Avion affecte au vol", vol.getAvion().getId() == grandAvion.getId());
+            verifier("Avion affecte au vol", vol.getAvion().getId().equals(grandAvion.getId()));
 
             volService.ajouterPassager(vol.getId(), jean.getId());
             volService.ajouterPassager(vol.getId(), paul.getId());
@@ -84,7 +83,7 @@ public class AeroportSpringApplication {
 
             verifier("Avion trop petit pour les passagers refuse",
                     leveErreur(() -> volService.affecterAvion(vol.getId(), petitAvion.getId())));
-            verifier("L'avion n'a pas change", vol.getAvion().getId() == grandAvion.getId());
+            verifier("L'avion n'a pas change", vol.getAvion().getId().equals(grandAvion.getId()));
 
             verifier("Vols de Jean = 1", volService.getVolsDuPassager(jean.getId()).size() == 1);
             volService.retirerPassager(vol.getId(), paul.getId());
@@ -135,6 +134,10 @@ public class AeroportSpringApplication {
             verifier("Aeroport inconnu -> vide", aeroportService.ajouterPersonnel(999, luc.getId()).isEmpty());
 
             System.out.println("\n========== " + reussis + " reussi(s), " + echoues + " echoue(s) ==========\n");
+
+            // On annule les donnees de test a la fin. Obligatoire : les tests "leveErreur" font lever
+            // des exceptions dans les services, ce qui marque la transaction "a annuler" ; un commit planterait
+            status.setRollbackOnly();
         });
     }
 

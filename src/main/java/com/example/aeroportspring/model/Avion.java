@@ -1,22 +1,17 @@
 package com.example.aeroportspring.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
-public class
-Avion {
-    private static int CPT = 0;
+public class Avion {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Setter
     @Enumerated(EnumType.STRING) // stocke "A380" en base plutot que son numero
     private ModeleAvion modeleAvion;
@@ -29,11 +24,9 @@ Avion {
     private int capacite;
 
     protected Avion() {
-        this.id = CPT++;
     }
 
     public Avion(ModeleAvion modeleAvion, Compagnie compagnie, boolean enVol, int capacite) {
-        this.id = CPT++;
         this.modeleAvion = modeleAvion;
         this.compagnie = compagnie;
         this.enVol = enVol;

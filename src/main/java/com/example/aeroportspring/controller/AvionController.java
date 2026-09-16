@@ -1,7 +1,6 @@
 package com.example.aeroportspring.controller;
 
 import com.example.aeroportspring.model.Avion;
-import com.example.aeroportspring.model.Compagnie;
 import com.example.aeroportspring.service.AvionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,9 +51,9 @@ public class AvionController {
         return ResponseEntity.notFound().build();
     }
 
-    @PatchMapping("/{id}/compagnie")
-    public ResponseEntity<Avion> modifierCompagnieAvion(@PathVariable int id, @RequestBody Compagnie compagnie){
-        return avionService.modifierCompagnieAvion(id, compagnie)
+    @PatchMapping("/{id}/compagnie/{compagnieId}")
+    public ResponseEntity<Avion> modifierCompagnieAvion(@PathVariable int id, @PathVariable int compagnieId){
+        return avionService.modifierCompagnieAvion(id, compagnieId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

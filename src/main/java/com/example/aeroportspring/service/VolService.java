@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class VolService {
 
     private final VolRepository volRepository;
@@ -55,7 +56,6 @@ public class VolService {
     }
 
     // Les lignes de vol_passager et vol_personnel sont supprimees automatiquement avec le vol
-    @Transactional
     public boolean supprimerVol(int id) {
         Optional<Vol> vol = volRepository.findById(id);
         if (vol.isEmpty()) {
