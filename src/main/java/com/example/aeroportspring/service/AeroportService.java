@@ -1,20 +1,18 @@
 package com.example.aeroportspring.service;
 
 import com.example.aeroportspring.model.Aeroport;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Getter
 @Service
 public class AeroportService {
 
     private final List<Aeroport> aeroports = new ArrayList<>();
-
-    public List<Aeroport> getAeroports() {
-        return this.aeroports;
-    }
 
     public Optional<Aeroport> getAeroport(int id) {
         return this.aeroports.stream()

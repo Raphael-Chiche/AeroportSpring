@@ -1,12 +1,21 @@
 package com.example.aeroportspring.model;
 
-public class Avion {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+public class
+Avion {
     private static int CPT = 0;
 
     private int id;
+    @Setter
     private ModeleAvion modeleAvion;
+    @Setter
     private Compagnie compagnie;
+    @Setter
     private boolean enVol;
+    @Setter
     private int capacite;
 
     public Avion(ModeleAvion modeleAvion, Compagnie compagnie, boolean enVol, int capacite) {
@@ -17,44 +26,8 @@ public class Avion {
         this.capacite = capacite;
     }
 
-    public int getId() {
-        return this.id;
-    }
-
-    public ModeleAvion getModeleAvion() {
-        return this.modeleAvion;
-    }
-
-    public void setModeleAvion(ModeleAvion modeleAvion) {
-        this.modeleAvion = modeleAvion;
-    }
-
-    public Compagnie getCompagnie() {
-        return this.compagnie;
-    }
-
-    public void setCompagnie(Compagnie compagnie) {
-        this.compagnie = compagnie;
-    }
-
     public void retirerCompagnie() {
         this.compagnie = null;
-    }
-
-    public boolean isEnVol() {
-        return this.enVol;
-    }
-
-    public void setEnVol(boolean enVol) {
-        this.enVol = enVol;
-    }
-
-    public int getCapacite() {
-        return this.capacite;
-    }
-
-    public void setCapacite(int capacite) {
-        this.capacite = capacite;
     }
 
     public void ajouterVol(Vol vol) {
