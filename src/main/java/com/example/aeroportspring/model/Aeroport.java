@@ -1,5 +1,8 @@
 package com.example.aeroportspring.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,10 +10,14 @@ public class Aeroport {
     private static int CPT = 0;
 
     private int id;
+    @Setter
     private String adresse;
     private List<Terminal> terminals;
+    @Setter
     private String nom;
+    @Setter
     private String pays;
+    @Setter
     private String UTC;
     private List<Personnel> personnels;
 
@@ -32,10 +39,6 @@ public class Aeroport {
         return this.adresse;
     }
 
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
     public List<Terminal> getTerminals() {
         return this.terminals;
     }
@@ -44,24 +47,12 @@ public class Aeroport {
         return this.nom;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
     public String getPays() {
         return this.pays;
     }
 
-    public void setPays(String pays) {
-        this.pays = pays;
-    }
-
     public String getUTC() {
         return this.UTC;
-    }
-
-    public void setUTC(String UTC) {
-        this.UTC = UTC;
     }
 
     public List<Personnel> getPersonnels() {
