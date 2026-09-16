@@ -15,6 +15,10 @@ public class Terminal {
         this.aeroport = aeroport;
     }
 
+    public int getId() {
+        return this.id;
+    }
+
     public Vol getVol() {
         return this.vol;
     }
