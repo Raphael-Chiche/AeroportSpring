@@ -1,25 +1,27 @@
 package com.example.aeroportspring.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Compagnie {
-    private static int CPT = 0;
+    // L'id est genere par la base (1, 2, 3...) au moment du save : plus besoin de compteur
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id; // Integer et pas int : vaut null tant que la compagnie n'est pas enregistree
     private String nom;
 
+    // Constructeur vide obligatoire pour JPA
     protected Compagnie() {
-        this.id = CPT++;
     }
 
     public Compagnie(String nom) {
-        this.id = CPT++;
         this.nom = nom;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 

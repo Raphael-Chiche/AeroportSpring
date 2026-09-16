@@ -47,7 +47,9 @@ public class AeroportSpringApplication {
             verifier("Aeroport retrouve par son id", aeroportService.getAeroport(cdg.getId()).isPresent());
             verifier("Id inconnu -> vide", passagerService.getPassager(999).isEmpty());
             compagnieService.modifierCompagnie(airFrance.getId(), new Compagnie("Air France KLM"));
-            verifier("Compagnie modifiee", airFrance.getNom().equals("Air France KLM"));
+            // On relit en base : findById renvoie un nouvel objet, "airFrance" n'est pas modifie directement
+            verifier("Compagnie modifiee",
+                    compagnieService.getCompagnie(airFrance.getId()).get().getNom().equals("Air France KLM"));
             verifier("Suppression d'un id inconnu -> false", !volService.supprimerVol(999));
 
             System.out.println("\n--- Modifications ciblees ---");
@@ -106,7 +108,7 @@ public class AeroportSpringApplication {
 
             System.out.println("\n--- Compagnie, destination, avion ---");
             volService.affecterCompagnie(vol.getId(), airFrance.getId());
-            verifier("Compagnie affectee", vol.getCompagnie() == airFrance);
+            verifier("Compagnie affectee", vol.getCompagnie().getId().equals(airFrance.getId()));
             verifier("Vols d'Air France = 1", volService.getVolsDeLaCompagnie(airFrance.getId()).size() == 1);
             volService.affecterDestination(vol.getId(), orly.getId());
             verifier("Destination affectee", vol.getDestination() == orly);
