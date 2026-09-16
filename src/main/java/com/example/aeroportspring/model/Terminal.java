@@ -2,15 +2,17 @@ package com.example.aeroportspring.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Terminal {
-    private static int CPT = 1;
     @Id
-    int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     // On coupe les references circulaires (Vol -> Terminal -> Vol, Aeroport -> Terminal -> Aeroport)
     // pour que la conversion en JSON ne tourne pas en boucle
     // Cote "inverse" : c'est le champ "depart" de Vol qui porte la cle etrangere
@@ -23,18 +25,17 @@ public class Terminal {
     @JsonIgnoreProperties("terminals")
     private Aeroport aeroport;
 
+    // Constructeur vide obligatoire pour JPA
     protected Terminal() {
-        this.id = CPT++;
     }
 
     public Terminal(Vol vol, String nom, Aeroport aeroport) {
-        this.id = CPT++; // équivalent à this.id = CPT et CPT = CPT + 1
         this.vol = vol;
         this.nom = nom;
         this.aeroport = aeroport;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 

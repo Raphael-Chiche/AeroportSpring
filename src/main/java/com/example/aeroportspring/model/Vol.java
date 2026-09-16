@@ -1,6 +1,9 @@
 package com.example.aeroportspring.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -13,13 +16,15 @@ import java.util.List;
 
 @Entity
 public class Vol {
-    private static int CPT = 0;
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     // Plusieurs vols -> une compagnie / un avion / une destination
     @ManyToOne
     private Compagnie compagnie;
-    @ManyToOne
+    // MERGE : les avions ne sont pas encore enregistres par AvionService,
+    // on les enregistre donc en base en meme temps que le vol
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Avion avion;
     // Un vol a plusieurs passagers, un passager peut prendre plusieurs vols
     @ManyToMany
@@ -38,13 +43,12 @@ public class Vol {
     @JoinTable(name = "vol_personnel")
     private List<Personnel> personnels = new ArrayList<>();
 
+    // Constructeur vide obligatoire pour JPA
     protected Vol() {
-        this.id = CPT++;
     }
 
     public Vol(Compagnie compagnie, Avion avion, Date heureDepart, Date heureArrivee,
                Aeroport destination, Terminal depart, float prix, String duree) {
-        this.id = CPT++;
         this.compagnie = compagnie;
         this.avion = avion;
         this.dateDepart = heureDepart;
@@ -57,7 +61,7 @@ public class Vol {
         this.personnels = new ArrayList<Personnel>();
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 

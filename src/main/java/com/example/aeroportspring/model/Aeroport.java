@@ -1,6 +1,8 @@
 package com.example.aeroportspring.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
@@ -12,10 +14,9 @@ import java.util.List;
 
 @Entity
 public class Aeroport {
-    private static int CPT = 0;
-
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Setter
     private String adresse;
     // Un aeroport a plusieurs terminaux. "mappedBy" : c'est le champ "aeroport" de Terminal qui porte la cle etrangere
@@ -34,11 +35,9 @@ public class Aeroport {
 
     // Constructeur vide obligatoire pour JPA
     protected Aeroport() {
-        this.id = CPT++;
     }
 
     public Aeroport(String adresse, String nom, String pays, String UTC) {
-        this.id = CPT++;
         this.adresse = adresse;
         this.terminals = new ArrayList<Terminal>();
         this.nom = nom;
@@ -47,7 +46,7 @@ public class Aeroport {
         this.personnels = new ArrayList<Personnel>();
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 

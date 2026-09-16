@@ -1,32 +1,33 @@
 package com.example.aeroportspring.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 
 @Entity
 public class Personnel {
-    private static int CPT = 0;
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String nom;
     private String prenom;
     @Enumerated(EnumType.STRING)
     private Profession profession;
 
+    // Constructeur vide obligatoire pour JPA
     protected Personnel() {
-        this.id = CPT++;
     }
 
     public Personnel(String nom, String prenom, Profession profession) {
-        this.id = CPT++;
         this.nom = nom;
         this.prenom = prenom;
         this.profession = profession;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 

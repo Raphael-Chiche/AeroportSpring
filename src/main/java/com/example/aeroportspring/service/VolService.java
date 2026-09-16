@@ -1,17 +1,17 @@
 package com.example.aeroportspring.service;
 
 import com.example.aeroportspring.model.Vol;
+import com.example.aeroportspring.repository.VolRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class VolService {
 
-    private final List<Vol> vols = new ArrayList<>();
-
+    private final VolRepository volRepository;
     private final PassagerService passagerService;
     private final PersonnelService personnelService;
     private final TerminalService terminalService;
@@ -19,9 +19,10 @@ public class VolService {
     private final CompagnieService compagnieService;
     private final AeroportService aeroportService;
 
-    public VolService(PassagerService passagerService, PersonnelService personnelService,
-                      TerminalService terminalService, AvionService avionService,
+    public VolService(VolRepository volRepository, PassagerService passagerService,
+                      PersonnelService personnelService, TerminalService terminalService, AvionService avionService,
                       CompagnieService compagnieService, AeroportService aeroportService) {
+        this.volRepository = volRepository;
         this.passagerService = passagerService;
         this.personnelService = personnelService;
         this.terminalService = terminalService;
@@ -31,33 +32,38 @@ public class VolService {
     }
 
     public List<Vol> getVols() {
-        return this.vols;
+        return volRepository.findAll();
     }
 
     public Optional<Vol> getVol(int id) {
-        return this.vols.stream()
-                .filter(x -> x.getId() == id)
-                .findFirst();
+        return volRepository.findById(id);
     }
 
     public Vol creerVol(Vol vol) {
-        this.vols.add(vol);
-        return vol;
+        return volRepository.save(vol);
     }
 
+    // La compagnie se change avec affecterCompagnie (PUT /Vol/{id}/compagnie/{compagnieId})
     public Optional<Vol> modifierVol(int id, Vol nouvellesInfos) {
         return getVol(id).map(vol -> {
-            vol.setCompagnie(nouvellesInfos.getCompagnie());
             vol.setDateDepart(nouvellesInfos.getDateDepart());
             vol.setDateArrivee(nouvellesInfos.getDateArrivee());
             vol.setPrix(nouvellesInfos.getPrix());
             vol.setDuree(nouvellesInfos.getDuree());
-            return vol;
+            return volRepository.save(vol);
         });
     }
 
+    // Les lignes de vol_passager et vol_personnel sont supprimees automatiquement avec le vol
+    @Transactional
     public boolean supprimerVol(int id) {
-        return this.vols.removeIf(x -> x.getId() == id);
+        Optional<Vol> vol = volRepository.findById(id);
+        if (vol.isEmpty()) {
+            return false;
+        }
+        vol.get().retirerTerminal();
+        volRepository.delete(vol.get());
+        return true;
     }
 
     // ----- Passagers -----
@@ -76,21 +82,19 @@ public class VolService {
                 throw new IllegalStateException("Le vol " + volId + " est complet");
             }
             passager.ajouterVol(vol);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
     public Optional<Vol> retirerPassager(int volId, int passagerId) {
         return getVol(volId).flatMap(vol -> passagerService.getPassager(passagerId).map(passager -> {
             passager.retirerVol(vol);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
     public List<Vol> getVolsDuPassager(int passagerId) {
-        return this.vols.stream()
-                .filter(vol -> vol.getPassagers().stream().anyMatch(p -> p.getId() == passagerId))
-                .toList();
+        return volRepository.findByPassagers_Id(passagerId);
     }
 
     // ----- Personnels -----
@@ -98,21 +102,19 @@ public class VolService {
     public Optional<Vol> ajouterPersonnel(int volId, int personnelId) {
         return getVol(volId).flatMap(vol -> personnelService.getPersonnel(personnelId).map(personnel -> {
             vol.ajouterPersonnel(personnel);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
     public Optional<Vol> retirerPersonnel(int volId, int personnelId) {
         return getVol(volId).flatMap(vol -> personnelService.getPersonnel(personnelId).map(personnel -> {
             vol.retirerPersonnel(personnel);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
     public List<Vol> getVolsDuPersonnel(int personnelId) {
-        return this.vols.stream()
-                .filter(vol -> vol.getPersonnels().stream().anyMatch(p -> p.getId() == personnelId))
-                .toList();
+        return volRepository.findByPersonnels_Id(personnelId);
     }
 
     // ----- Terminal de depart -----
@@ -125,14 +127,14 @@ public class VolService {
             }
             vol.retirerTerminal();
             vol.ajouterTerminal(terminal);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
     public Optional<Vol> retirerTerminal(int volId) {
         return getVol(volId).map(vol -> {
             vol.retirerTerminal();
-            return vol;
+            return volRepository.save(vol);
         });
     }
 
@@ -145,7 +147,7 @@ public class VolService {
                         + " places pour " + vol.getNombrePassagers() + " passagers");
             }
             avion.ajouterVol(vol);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
@@ -154,7 +156,7 @@ public class VolService {
             if (vol.getAvion() != null) {
                 vol.getAvion().retirerVol(vol);
             }
-            return vol;
+            return volRepository.save(vol);
         });
     }
 
@@ -163,20 +165,18 @@ public class VolService {
     public Optional<Vol> affecterCompagnie(int volId, int compagnieId) {
         return getVol(volId).flatMap(vol -> compagnieService.getCompagnie(compagnieId).map(compagnie -> {
             vol.setCompagnie(compagnie);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 
     public List<Vol> getVolsDeLaCompagnie(int compagnieId) {
-        return this.vols.stream()
-                .filter(vol -> vol.getCompagnie() != null && vol.getCompagnie().getId() == compagnieId)
-                .toList();
+        return volRepository.findByCompagnie_Id(compagnieId);
     }
 
     public Optional<Vol> affecterDestination(int volId, int aeroportId) {
         return getVol(volId).flatMap(vol -> aeroportService.getAeroport(aeroportId).map(aeroport -> {
             vol.setDestination(aeroport);
-            return vol;
+            return volRepository.save(vol);
         }));
     }
 }
