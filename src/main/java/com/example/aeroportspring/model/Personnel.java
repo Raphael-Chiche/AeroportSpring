@@ -1,12 +1,23 @@
 package com.example.aeroportspring.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+
+@Entity
 public class Personnel {
     private static int CPT = 0;
-
+    @Id
     private int id;
     private String nom;
     private String prenom;
+    @Enumerated(EnumType.STRING)
     private Profession profession;
+
+    protected Personnel() {
+        this.id = CPT++;
+    }
 
     public Personnel(String nom, String prenom, Profession profession) {
         this.id = CPT++;

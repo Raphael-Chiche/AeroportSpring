@@ -1,25 +1,41 @@
 package com.example.aeroportspring.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Aeroport {
     private static int CPT = 0;
 
+    @Id
     private int id;
     @Setter
     private String adresse;
-    private List<Terminal> terminals;
+    // Un aeroport a plusieurs terminaux. "mappedBy" : c'est le champ "aeroport" de Terminal qui porte la cle etrangere
+    @OneToMany(mappedBy = "aeroport")
+    private List<Terminal> terminals = new ArrayList<>();
     @Setter
     private String nom;
     @Setter
     private String pays;
     @Setter
     private String UTC;
-    private List<Personnel> personnels;
+    // Un aeroport a plusieurs personnels (Personnel ne connait pas son aeroport -> table de jointure)
+    @OneToMany
+    @JoinTable(name = "aeroport_personnel")
+    private List<Personnel> personnels = new ArrayList<>();
+
+    // Constructeur vide obligatoire pour JPA
+    protected Aeroport() {
+        this.id = CPT++;
+    }
 
     public Aeroport(String adresse, String nom, String pays, String UTC) {
         this.id = CPT++;

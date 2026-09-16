@@ -1,23 +1,46 @@
 package com.example.aeroportspring.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Entity
 public class Vol {
     private static int CPT = 0;
-
+    @Id
     private int id;
+    // Plusieurs vols -> une compagnie / un avion / une destination
+    @ManyToOne
     private Compagnie compagnie;
+    @ManyToOne
     private Avion avion;
-    private List<Passager> passagers;
+    // Un vol a plusieurs passagers, un passager peut prendre plusieurs vols
+    @ManyToMany
+    @JoinTable(name = "vol_passager")
+    private List<Passager> passagers = new ArrayList<>();
     private Date dateDepart;
     private Date dateArrivee;
+    @ManyToOne
     private Aeroport destination;
+    // Un vol <-> un terminal de depart (cote proprietaire : colonne depart_id dans la table vol)
+    @OneToOne
     private Terminal depart;
     private float prix;
     private String duree;
-    private List<Personnel> personnels;
+    @ManyToMany
+    @JoinTable(name = "vol_personnel")
+    private List<Personnel> personnels = new ArrayList<>();
+
+    protected Vol() {
+        this.id = CPT++;
+    }
 
     public Vol(Compagnie compagnie, Avion avion, Date heureDepart, Date heureArrivee,
                Aeroport destination, Terminal depart, float prix, String duree) {
