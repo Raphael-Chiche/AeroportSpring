@@ -19,8 +19,8 @@ public class Vol {
     private String duree;
     private List<Personnel> personnels;
 
-    public Vol(Compagnie compagnie, Avion avion, String heureDepart, String heureArrivee,
-            Aeroport destination, Terminal depart, float prix, String duree) {
+    public Vol(Compagnie compagnie, Avion avion, Date heureDepart, Date heureArrivee,
+               Aeroport destination, Terminal depart, float prix, String duree) {
         this.id = CPT++;
         this.compagnie = compagnie;
         this.avion = avion;
