@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -21,8 +22,10 @@ public class AeroportSpringApplication {
         SpringApplication.run(AeroportSpringApplication.class, args);
     }
 
-    // Lance les tests au demarrage de l'application, une fois les services crees par Spring
+    // Lance les tests au demarrage de l'application, une fois les services crees par Spring.
+    // Pas avec le profil "docker" : sinon les donnees de test seraient re-inserees dans PostgreSQL a chaque demarrage
     @Bean
+    @Profile("!docker")
     CommandLineRunner tests(AeroportService aeroportService, CompagnieService compagnieService,
                             AvionService avionService, TerminalService terminalService,
                             PassagerService passagerService, PersonnelService personnelService,
