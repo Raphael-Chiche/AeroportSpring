@@ -1,0 +1,38 @@
+services:
+
+  # Base PostgreSQL : les donnees sont gardees dans le volume "db-data"
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: aeroportdb
+      POSTGRES_USER: aeroport
+      POSTGRES_PASSWORD: aeroport
+    ports:
+      - "5432:5432"   # pour s'y connecter depuis IntelliJ / DBeaver
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # L'appli ne demarre que quand la base accepte les connexions
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aeroport -d aeroportdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Application Spring, construite a partir du Dockerfile
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker   # charge application-docker.properties
+      DB_HOST: db                      # nom du service ci-dessus
+      DB_PORT: 5432
+      DB_NAME: aeroportdb
+      DB_USER: aeroport
+      DB_PASSWORD: aeroport
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:
