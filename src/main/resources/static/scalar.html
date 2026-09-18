@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>API Aeroport - Documentation</title>
+    <style>
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- Scalar : rendu visuel du document OpenAPI expose par springdoc -->
+<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+<script>
+    Scalar.createApiReference('#app', {
+        url: '/v3/api-docs',
+        theme: 'bluePlanet',
+        darkMode: true,
+        hideDownloadButton: false,
+    });
+</script>
+</body>
+</html>
